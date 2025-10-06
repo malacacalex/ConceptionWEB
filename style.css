@@ -12,3 +12,10 @@ img {
     display: flex;
     overflow: scroll;
 }
+
+li.nav-item{
+    color:white;
+}
+body{
+    background-color:rgb(243, 240, 193)
+}
