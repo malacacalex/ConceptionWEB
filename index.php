@@ -13,7 +13,9 @@
     </div>
 
     <div class="maDiv">
-        <a href="house1.php"><img src="images/house1.jpg"></a>
+        <a href="house1.php">
+            <img src="images/house1.jpg">
+        </a>
         <img src="images/house1.jpg" class ="col-sm">
         <img src="images/house1.jpg" class ="col-sm">
         <img src="images/house1.jpg" class ="col-sm">

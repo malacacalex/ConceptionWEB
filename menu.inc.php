@@ -13,10 +13,10 @@
           <a class="nav-link" aria-current="page" href="index.php" style="color:white">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="page.php" style="color:white">Page</a>
+          <a class="nav-link" href="demenagement.php" style="color:white">Déménagement</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="autre.php" style="color:white">Autre page</a>
+          <a class="nav-link" href="demenagementCours.php" style="color:white">Mes déménagements en cours</a>
         </li>
       </ul>
 
