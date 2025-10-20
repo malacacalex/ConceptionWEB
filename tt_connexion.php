@@ -1,53 +1,59 @@
 <?php
-  session_start(); // Pour les massages
+session_start();
 
-  // Contenu du formulaire :
-  $email =  htmlentities($_POST['email']);
-  $password = htmlentities($_POST['password']);
-  $role = 0; 
-  // Définir des valeurs pour le role :
-  // 0 : le compte n'est pas activé,
-  // 1 : tuteur entreprise,
-  // 2 : Responsable Ping,
-  // 3 : admin
+// --- Récupération des champs ---
+$ut_email = htmlentities($_POST['email']);
+$ut_mdp = htmlentities($_POST['password']);
 
-  // Option pour bcrypt (voir le lien du cours vers le site de PHP) :
-  $options = [
-        'cost' => 10,
-  ];
-  // On crypte le mot de passe
-  $password_crypt = password_hash($password, PASSWORD_BCRYPT, $options);
+// --- Connexion à la base ---
+require_once("param.inc.php");
+$mysqli = new mysqli($host, $login, $passwd, $dbname);
 
-  // Connexion :
-  require_once("param.inc.php");
-  $mysqli = new mysqli($host, $login, $passwd, $dbname);
-  if ($mysqli->connect_error) {
-    $_SESSION['erreur']="Problème de connexion à la base de données ! &#128557;";
-      // die('Erreur de connexion (' . $mysqli->connect_errno . ') '
-              // . $mysqli->connect_error);
-  }
+if ($mysqli->connect_error) {
+    $_SESSION['erreur'] = "Problème de connexion à la base de données 😢";
+    header('Location: connexion.php');
+    exit();
+}
 
-  // À faire : vérifier si l'email existe déjà !
+// --- Recherche de l'utilisateur ---
+$sql = "SELECT ut_id, ut_nom, ut_prenom, ut_mdp, ut_role, ut_statut FROM utilisateur WHERE ut_email = ?";
+if ($stmt = $mysqli->prepare($sql)) {
+    $stmt->bind_param("s", $ut_email);
+    $stmt->execute();
+    $stmt->store_result();
 
+    if ($stmt->num_rows == 1) {
+        $stmt->bind_result($ut_id, $ut_nom, $ut_prenom, $ut_mdp_hash, $ut_role, $ut_statut);
+        $stmt->fetch();
 
-  // Modifier la requête en fonction de la table et/ou des attributs :
-  if ($stmt = $mysqli->prepare("INSERT INTO compte(nom, prenom, email, password, role) VALUES (?, ?, ?, ?, ?)")) {
+        // Vérification du mot de passe
+        if (password_verify($ut_mdp, $ut_mdp_hash)) {
+            if ($ut_statut == 1) {
+                // Authentification réussie
+                $_SESSION['ut_id'] = $ut_id;
+                $_SESSION['ut_nom'] = $ut_nom;
+                $_SESSION['ut_prenom'] = $ut_prenom;
+                $_SESSION['ut_role'] = $ut_role;
 
-    $stmt->bind_param("ssssi", $nom, $prenom, $email, $password_crypt, $role);
-    // Le message est mis dans la session, il est préférable de séparer message normal et message d'erreur.
-    if($stmt->execute()) {
-        // Requête exécutée correctement 
-        $_SESSION['message'] = "Enregistrement réussi";
-
+                $_SESSION['message'] = "✅ Bienvenue $ut_prenom $ut_nom !";
+                header('Location: index.php');
+                exit();
+            } else {
+                $_SESSION['erreur'] = "⚠️ Votre compte est désactivé.";
+            }
+        } else {
+            $_SESSION['erreur'] = "❌ Mot de passe incorrect.";
+        }
     } else {
-        // Il y a eu une erreur
-        $_SESSION['erreur'] =  "Impossible d'enregistrer";
+        $_SESSION['erreur'] = "❌ Aucun compte trouvé avec cet email.";
     }
-  }
- 
 
+    $stmt->close();
+} else {
+    $_SESSION['erreur'] = "❌ Erreur de requête.";
+}
 
-  header('Location: index.php');
-
-
+$mysqli->close();
+header('Location: connexion.php');
+exit();
 ?>

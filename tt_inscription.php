@@ -1,55 +1,64 @@
 <?php
-  session_start(); // Pour les massages
+session_start(); // Pour les messages
 
-  // Contenu du formulaire :
-  $nom =  htmlentities($_POST['nom']);
-  $prenom = htmlentities($_POST['prenom']);
-  $email =  htmlentities($_POST['email']);
-  $password = htmlentities($_POST['password']);
-  $role = 0; 
-  // Définir des valeurs pour le role :
-  // 0 : le compte n'est pas activé,
-  // 1 : tuteur entreprise,
-  // 2 : Responsable Ping,
-  // 3 : admin
+// --- Récupération et sécurisation du formulaire ---
+$ut_nom = htmlentities($_POST['nom']);
+$ut_prenom = htmlentities($_POST['prenom']);
+$ut_email = htmlentities($_POST['email']);
+$ut_mdp = htmlentities($_POST['password']);
 
-  // Option pour bcrypt (voir le lien du cours vers le site de PHP) :
-  $options = [
-        'cost' => 10,
-  ];
-  // On crypte le mot de passe
-  $password_crypt = password_hash($password, PASSWORD_BCRYPT, $options);
+// Rôles possibles : 'client', 'déménageur', 'admin'
+$ut_role = 'client';
+$ut_statut = 1; // 1 = actif
+$ut_date_inscription = date("Y-m-d");
 
-  // Connexion :
-  require_once("param.inc.php");
-  $mysqli = new mysqli($host, $login, $passwd, $dbname);
-  if ($mysqli->connect_error) {
-    $_SESSION['erreur']="Problème de connexion à la base de données ! &#128557;";
-      // die('Erreur de connexion (' . $mysqli->connect_errno . ') '
-              // . $mysqli->connect_error);
-  }
+// --- Cryptage du mot de passe ---
+$options = ['cost' => 10];
+$ut_mdp_crypt = password_hash($ut_mdp, PASSWORD_BCRYPT, $options);
 
-  // À faire : vérifier si l'email existe déjà !
+// --- Connexion à la base ---
+require_once("param.inc.php");
+$mysqli = new mysqli($host, $login, $passwd, $dbname);
 
+if ($mysqli->connect_error) {
+    $_SESSION['erreur'] = "Problème de connexion à la base de données 😢";
+    header('Location: inscription.php');
+    exit();
+}
 
-  // Modifier la requête en fonction de la table et/ou des attributs :
-  if ($stmt = $mysqli->prepare("INSERT INTO compte(nom, prenom, email, password, role) VALUES (?, ?, ?, ?, ?)")) {
+// --- Vérifier si l'email existe déjà ---
+$check = $mysqli->prepare("SELECT ut_id FROM utilisateur WHERE ut_email = ?");
+$check->bind_param("s", $ut_email);
+$check->execute();
+$check->store_result();
 
-    $stmt->bind_param("ssssi", $nom, $prenom, $email, $password_crypt, $role);
-    // Le message est mis dans la session, il est préférable de séparer message normal et message d'erreur.
-    if($stmt->execute()) {
-        // Requête exécutée correctement 
-        $_SESSION['message'] = "Enregistrement réussi";
+if ($check->num_rows > 0) {
+    $_SESSION['erreur'] = "⚠️ Cet email est déjà utilisé !";
+    $check->close();
+    header('Location: inscription.php');
+    exit();
+}
+$check->close();
 
+// --- Insertion du nouvel utilisateur ---
+$sql = "INSERT INTO utilisateur (ut_nom, ut_prenom, ut_email, ut_mdp, ut_role, ut_date_inscription, ut_statut)
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+if ($stmt = $mysqli->prepare($sql)) {
+    $stmt->bind_param("ssssssi", $ut_nom, $ut_prenom, $ut_email, $ut_mdp_crypt, $ut_role, $ut_date_inscription, $ut_statut);
+    
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "✅ Inscription réussie ! Vous pouvez maintenant vous connecter.";
     } else {
-        // Il y a eu une erreur
-        $_SESSION['erreur'] =  "Impossible d'enregistrer";
+        $_SESSION['erreur'] = "❌ Erreur lors de l'enregistrement de l'utilisateur.";
     }
-  }
- 
 
+    $stmt->close();
+} else {
+    $_SESSION['erreur'] = "❌ Erreur de préparation de la requête.";
+}
 
-  header('Location: index.php');
-
-
+$mysqli->close();
+header('Location: index.php');
+exit();
 ?>
