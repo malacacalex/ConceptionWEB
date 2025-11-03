@@ -1,5 +1,12 @@
 <?php
 session_start();
+  // Vérification si l'user est un client
+  if (!isset($_SESSION['ut_id']) || $_SESSION['ut_role'] !== 'client') {
+    $_SESSION['erreur'] = "Vous n'etes pas un client, vous ne pouvez pas créer de demande.";
+    header('Location: index.php');
+    exit();
+  }
+
 $titre = "Nouvelle Demande";
 include('header.inc.php');
 include('menu.inc.php');
@@ -26,10 +33,6 @@ include('message.inc.php')
         <div class="col-md-6">
             <label for="an_date_demenagement" class="form-label">Date du déménagement</label>
             <input type="date" class="form-control" id="an_date_demenagement" name="an_date_demenagement" required>
-        </div>
-        <div class="col-md-6">
-            <label for="an_date_creation" class="form-label">Date de création</label>
-            <input type="date" class="form-control" id="an_date_creation" name="an_date_creation" required>
         </div>
     </div>
 

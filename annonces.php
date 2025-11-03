@@ -36,9 +36,8 @@
                       </ul>
                       <div class="card-body">
                         <?php
-                          // On affiche le bouton "Proposer un prix" SEULEMENT si l'utilisateur
-                          [cite_start]// est connecté ET qu'il a le rôle "déménageur" [cite: 149]
-                          if (isset($_SESSION['ut_role']) && $_SESSION['ut_role'] == 'déménageur') {
+
+                          if(isset($_SESSION['ut_role']) && $_SESSION['ut_role'] == 'déménageur') {
                         ?>
                             <a href="form_proposition.php?id_annonce=<?php echo $row['an_id']; ?>" class="btn btn-primary">
                               Proposer un prix

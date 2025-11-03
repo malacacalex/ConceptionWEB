@@ -3,8 +3,8 @@
 
   // Vérification si l'user est un client
   if (!isset($_SESSION['ut_id']) || $_SESSION['ut_role'] !== 'client') {
-    $_SESSION['erreur'] = "Vous n'etes pas un client, vous ne pouvez pas créer de demande."
-    header('Location: connexion.php');
+    $_SESSION['erreur'] = "Vous n'etes pas un client, vous ne pouvez pas créer de demande.";
+    header('Location: index.php');
     exit();
   }
 
@@ -24,7 +24,7 @@
   <div class="list-group">
     <?php
       require_once("param.inc.php");
-      $mysqli = new mysqli($host, $login, $passwd $dbname);
+      $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
       $sql = "select an_id, an_titre, an_statut, an_date_demenagement from annonce where an_id_client = ?";
 
