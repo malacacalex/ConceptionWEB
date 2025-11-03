@@ -8,7 +8,13 @@ $ut_email = htmlentities($_POST['email']);
 $ut_mdp = htmlentities($_POST['password']);
 
 // Rôles possibles : 'client', 'déménageur', 'admin'
-$ut_role = 'client';
+$ut_role = htmlentities($_POST['role']);
+if ($ut_role !== 'client' && $ut_role !== 'demenageur') {
+    $_SESSION['erreur'] = "Aucun compte valide.";
+    header('Location: inscription.php');
+    exit();
+}
+
 $ut_statut = 1; // 1 = actif
 $ut_date_inscription = date("Y-m-d");
 

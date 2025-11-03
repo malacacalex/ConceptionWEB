@@ -22,12 +22,27 @@
 
       <!-- Partie droite -->
       <ul class="navbar-nav">
+        <?php
+        // Vérification connexion user
+        if (isset($_SESSION['ut_id'])):
+        ?>
+          <li class="nav-item">
+            <span class="nav-link" style="color:white">
+              Bonjour, <?php echo htmlspecialchars($_SESSION['ut_prenom']); ?>
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="deconnexion.php" style="color:white">Deconnexion</a>
+          </li>
+        <?php else: ?>
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="inscription.php" style="color:white">Inscription</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="connexion.php" style="color:white">Connexion</a>
           </li>
+        <?php endif; ?>
       </ul>
     </div>
   </div>

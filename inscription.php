@@ -10,7 +10,7 @@
 
     <!-- Nom et prénom sur une ou deux lignes (en fonction de la taille) -->
     <!-- Ici on utilise le breakpoint medium -->
-    <div class="row my-3">
+    <div class="row">
         <div class="col-md-6">
             <label for="nom" class="form-label">Nom</label>
             <input type="text" class="form-control " id="nom" name="nom" placeholder="Votre nom..." required>
@@ -20,6 +20,7 @@
             <input type="text" class="form-control " id="prenom" name="prenom" placeholder="Votre prénom..." required>
         </div>
     </div>
+
     <!-- email et mot de passe -->
     <div class="row">
         <div class="col-md-6">
@@ -30,7 +31,27 @@
             <label for="password" class="form-label">Mot de passe</label>
             <input type="password" class="form-control " id="password" name="password" placeholder="Votre mot de passe..." required>
         </div>
+
+    <!-- Selection du role (demenageur ou client) -->
+    <div class="row">
+        <div class="col-md-6">
+            <label class="form-label">Type de compte</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="role" id="role_client" value="client" required checked>
+                <label class="form-check-label" for="role_client">
+                    Je suis un Client
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="role" id="role_demenageur" value="déménageur" required>
+                <label class="form-check-label" for="role_demenageur">
+                    Je suis un Déménageur
+                </label>
+            </div>
+        </div>
     </div>
+
+    <!-- Bouton inscription -->
     <div class="row my-3">
         <div class="d-grid d-md-block">
             <button class="btn btn-outline-primary" type="submit">Inscription</button></div>   
