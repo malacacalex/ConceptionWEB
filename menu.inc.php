@@ -13,7 +13,7 @@
           <a class="nav-link" aria-current="page" href="index.php" style="color:white">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="demenagement.php" style="color:white">Déménagement</a>
+          <a class="nav-link" href="annonces.php" style="color:white">Déménagement</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="tdbClient.php" style="color:white">Mes déménagements en cours</a>
