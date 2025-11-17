@@ -67,7 +67,7 @@
             <li><strong>Demenageurs :</strong> <?php echo $annonce['an_nombre_demenageurs']; ?></li>
             <li><strong>Propositions :</strong> <span class="badge bg-dark"><?php echo $nb_propositions; ?></span></li>
           </ul>
-          <a href="detail_annonce.php?id=<?php echo $annonce['an_id']; ?>" class="btn btn-dark btn-sm">Voir les details</a>
+          <a href="detailAnnonce.php?id=<?php echo $annonce['an_id']; ?>" class="btn btn-dark btn-sm">Voir les details</a>
         </div>
         <div class="card-footer text-muted">
           <small>Publie le <?php echo date('d/m/Y', strtotime($annonce['an_date_creation'])); ?></small>
