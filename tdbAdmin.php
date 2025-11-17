@@ -49,12 +49,12 @@
         <div class="card-body d-grid gap-4">
           
           <!-- Bouton Gestion des Utilisateurs -->
-          <a href="gestion_utilisateurs.php" class="btn btn-lg btn-dark shadow-sm py-3 border-0">
+          <a href="gestionUtilisateurs.php" class="btn btn-lg btn-dark shadow-sm py-3 border-0">
             Gestion des Utilisateurs
           </a>
 
           <!-- Bouton Gestion des Annonces -->
-          <a href="gestion_annonces.php" class="btn btn-lg btn-dark shadow-sm py-3 border-0">
+          <a href="gestionAnnonces.php" class="btn btn-lg btn-dark shadow-sm py-3 border-0">
             Gestion des Annonces
           </a>
 

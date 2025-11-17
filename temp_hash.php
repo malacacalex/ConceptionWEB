@@ -1,6 +1,6 @@
 <?php
 // Choisissez un mot de passe fort pour votre admin
-$mot_de_passe_admin = ''; 
+$mot_de_passe_admin = '1234'; 
 
 $hash = password_hash($mot_de_passe_admin, PASSWORD_DEFAULT);
 
