@@ -18,7 +18,7 @@ $ut_email = htmlentities($_POST['email']);
 $ut_mdp = htmlentities($_POST['password']);
 $ut_role = $_POST['role']; 
 
-if ($ut_role !== 'client' && $ut_role !== 'demenageur') {
+if ($ut_role !== 'client' && $ut_role !== 'déménageur') {
     $_SESSION['erreur'] = "Le type de compte n'est pas valide.";
     header('Location: inscription.php');
     exit();
