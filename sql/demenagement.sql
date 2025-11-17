@@ -23,7 +23,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `annonce`
+-- Structure de la table `annonce` (avec modifications)
 --
 
 DROP TABLE IF EXISTS `annonce`;
@@ -33,6 +33,7 @@ CREATE TABLE `annonce` (
   `an_titre` varchar(255) NOT NULL,
   `an_description` text,
   `an_date_demenagement` date NOT NULL,
+  `an_heure_debut` time DEFAULT NULL,
   `an_ville_depart` varchar(100) DEFAULT NULL,
   `an_ville_arrivee` varchar(100) DEFAULT NULL,
   `an_type_logement_depart` enum('maison','appartement') DEFAULT NULL,
@@ -41,8 +42,25 @@ CREATE TABLE `annonce` (
   `an_type_logement_arrivee` enum('maison','appartement') DEFAULT NULL,
   `an_etage_arrivee` int(11) DEFAULT NULL,
   `an_ascenseur_arrivee` tinyint(1) DEFAULT NULL,
+  `an_volume` float DEFAULT NULL,
+  `an_poids` float DEFAULT NULL,
+  `an_nombre_demenageurs` int(11) NOT NULL DEFAULT '2',
   `an_statut` enum('ouverte','en cours','terminée') NOT NULL,
   `an_date_creation` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `demenagement_image` (nouvelle table)
+--
+
+DROP TABLE IF EXISTS `demenagement_image`;
+CREATE TABLE `demenagement_image` (
+  `img_id` int(11) NOT NULL,
+  `img_id_annonce` int(11) NOT NULL,
+  `img_nom_fichier` varchar(255) NOT NULL,
+  `img_chemin` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -107,6 +125,13 @@ ALTER TABLE `annonce`
   ADD KEY `an_id_client` (`an_id_client`);
 
 --
+-- Index pour la table `demenagement_image`
+--
+ALTER TABLE `demenagement_image`
+  ADD PRIMARY KEY (`img_id`),
+  ADD KEY `img_id_annonce` (`img_id_annonce`);
+
+--
 -- Index pour la table `evaluation`
 --
 ALTER TABLE `evaluation`
@@ -140,6 +165,11 @@ ALTER TABLE `utilisateur`
 ALTER TABLE `annonce`
   MODIFY `an_id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT pour la table `demenagement_image`
+--
+ALTER TABLE `demenagement_image`
+  MODIFY `img_id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT pour la table `evaluation`
 --
 ALTER TABLE `evaluation`
@@ -163,6 +193,12 @@ ALTER TABLE `utilisateur`
 --
 ALTER TABLE `annonce`
   ADD CONSTRAINT `annonce_ibfk_1` FOREIGN KEY (`an_id_client`) REFERENCES `utilisateur` (`ut_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `demenagement_image`
+--
+ALTER TABLE `demenagement_image`
+  ADD CONSTRAINT `demenagement_image_ibfk_1` FOREIGN KEY (`img_id_annonce`) REFERENCES `annonce` (`an_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `evaluation`

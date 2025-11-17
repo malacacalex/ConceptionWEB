@@ -1,8 +1,8 @@
-  
-  <?php
+<?php
   if(isset($_SESSION['message'])) {
 
-    echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>";
+    // On utilise 'alert-dark' pour les messages de succes
+    echo "<div class='alert alert-dark alert-dismissible fade show' role='alert'>";
       
     echo $_SESSION["message"];
     echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
@@ -12,6 +12,7 @@
   }
   if(isset($_SESSION['erreur'])) {
 
+    // On garde 'alert-danger' (rouge) pour les erreurs, c'est important
     echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>";
       
     echo $_SESSION["erreur"];
@@ -20,4 +21,4 @@
 
     unset($_SESSION['erreur']);
   }
-  ?>
+?>
