@@ -5,6 +5,12 @@
   include('menu.inc.php');
   include('message.inc.php');
 
+  $role = $_SESSION['ut_role'] ?? ''; // Récupère le rôle ou une chaîne vide
+  if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur')) {
+    $_SESSION['message'] = "Accès refusé. Vous devez être connecté en tant qu'administrateur.";
+    header('Location: index.php');
+    exit();
+  }
 
 ?>
 <div class="container my-5">

@@ -10,22 +10,34 @@
   $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
   if ($mysqli->connect_error) {
-    // Gestion de l'erreur de connexion à la BDD
-    $_SESSION['message'] = "Erreur de connexion à la base de données : " . $mysqli->connect_error;
+    // Gestion de l'erreur de connexion à la BDD (Erreur Système)
+    $_SESSION['message'] = "Une erreur de connexion est survenue. Veuillez réessayer.";
     header('Location: connexion.php');
     exit();
   }
 
-  // Préparation de la requête
-  if ($stmt = $mysqli->prepare("SELECT ut_id, ut_nom, ut_prenom, ut_role, ut_motdepasse, ut_email, ut_statut FROM utilisateur WHERE ut_email = ?")){
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-  }
+  // Préparation de la requête sécurisée
+  $stmt = $mysqli->prepare("SELECT ut_id, ut_nom, ut_prenom, ut_role, ut_mdp, ut_email, ut_statut FROM utilisateur WHERE ut_email = ?");
 
+  if ($stmt === false) {
+    
+    $_SESSION['message'] = "Une erreur technique est survenue. Veuillez contacter l'administrateur.";
+    
+    $mysqli->close();
+    header('Location: connexion.php');
+    exit();
+  }
+  
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  // Vérification de l'utilisateur (Erreur Utilisateur)
   if ($user = $result->fetch_assoc()) {
-    // Vérification du mot de passe
-    if (password_verify($password, $user['ut_motdepasse'])) { 
+    
+    // Vérification du mot de passe (Erreur Utilisateur)
+    // CORRECTION : $user['ut_motdepasse'] a été remplacé par $user['ut_mdp']
+    if (password_verify($password, $user['ut_mdp'])) { 
         
         // VÉRIFICATION DU STATUT DU COMPTE
         if ($user['ut_statut'] == 0) {
@@ -47,6 +59,7 @@
         $redirection_page = 'index.php'; 
         switch ($user['ut_role']) {
             case 'administrateur':
+            case 'admin': // Ajout pour correspondre au ENUM de la BDD
                 $redirection_page = 'tdbAdmin.php'; 
                 break;
             case 'client':
@@ -62,12 +75,12 @@
         exit();
 
     } else {
-      // Mot de passe incorrect
-      $_SESSION['message'] = "Mot de passe incorrect.";
+      // Mot de passe incorrect (Message générique)
+      $_SESSION['message'] = "Identifiant ou mot de passe incorrect.";
     }
   } else {
-    // Utilisateur non trouvé
-    $_SESSION['message'] = "Aucun compte trouvé avec cet email.";
+    // Utilisateur non trouvé (Message générique)
+    $_SESSION['message'] = "Identifiant ou mot de passe incorrect.";
   }
 
   // Si la connexion a échoué (ou compte inactif), rediriger vers la page de connexion
