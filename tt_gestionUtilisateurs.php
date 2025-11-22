@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// 1. Vérification des droits d'accès
+// Vérification des droits d'accès
 $role = $_SESSION['ut_role'] ?? '';
 // Utilisation d'une vérification plus robuste
 if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur')) {
@@ -10,7 +10,7 @@ if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur'
     exit();
 }
 
-// 2. Connexion à la BDD
+// Connexion à la BDD
 require_once("param.inc.php");
 $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
@@ -20,12 +20,12 @@ if ($mysqli->connect_error) {
     exit();
 }
 
-// 3. Récupération des données POST
+// Récupération des données POST
 $action = $_POST['action'] ?? '';
 $user_id = $_POST['user_id'] ?? 0;
 $admin_id = $_SESSION['ut_id']; // ID de l'admin qui fait l'action
 
-// 4. Sécurité : Vérifier que l'admin n'essaie pas de s'auto-modifier
+// Sécurité : Vérifier que l'admin n'essaie pas de s'auto-modifier
 if ($user_id == $admin_id) {
     $_SESSION['message'] = "Erreur : Vous ne pouvez pas modifier votre propre compte depuis cette interface.";
     header('Location: gestionUtilisateurs.php');
@@ -33,7 +33,7 @@ if ($user_id == $admin_id) {
     exit();
 }
 
-// 5. Exécution de l'action demandée
+// Exécution de l'action demandée
 switch ($action) {
     case 'toggle_status':
         $new_status = $_POST['new_status'] ?? 0;
@@ -78,7 +78,7 @@ switch ($action) {
         break;
 }
 
-// 6. Redirection vers la page de gestion
+// Redirection vers la page de gestion
 $mysqli->close();
 header('Location: gestionUtilisateurs.php');
 exit();

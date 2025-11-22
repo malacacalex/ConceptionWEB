@@ -5,7 +5,7 @@
   include('menu.inc.php');
   include('message.inc.php');
 
-  // 1. Vérification des droits d'accès
+  // Vérification des droits d'accès
   $role = $_SESSION['ut_role'] ?? '';
   if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur')) {
     $_SESSION['message'] = "Accès refusé. Vous devez être connecté en tant qu'administrateur.";
@@ -13,7 +13,7 @@
     exit();
   }
 
-  // 2. Connexion à la BDD
+  // Connexion à la BDD
   require_once("param.inc.php");
   $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
@@ -23,7 +23,7 @@
     exit();
   }
   
-  // 3. Récupération de toutes les annonces avec le nom du client
+  // Récupération de toutes les annonces avec le nom du client
   $sql = "SELECT 
             a.an_id, a.an_titre, a.an_ville_depart, a.an_ville_arrivee, a.an_date_demenagement, a.an_statut, a.an_volume,
             u.ut_nom, u.ut_prenom, u.ut_email
@@ -70,8 +70,7 @@
             if ($result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
                 
-                // CORRECTION DE SYNTAXE : Utilisation du switch/case à la place de match()
-                $status_class = 'bg-primary'; // Valeur par défaut
+                $status_class = 'bg-primary'; 
                 switch ($row['an_statut']) {
                     case 'ouverte':
                         $status_class = 'bg-success';
@@ -99,8 +98,8 @@
                     </span>
                   </td>
                   <td class="text-center">
-                    <!-- Bouton pour Consulter/Modifier (vous devrez créer cette page) -->
-                    <a href="form_modifier_annonce.php?id=<?php echo $row['an_id']; ?>" class="btn btn-info btn-sm m-1" title="Consulter/Modifier">
+                    <!-- Bouton pour Consulter/Modifier -->
+                    <a href="modifierAnnonce.php?id=<?php echo $row['an_id']; ?>" class="btn btn-info btn-sm m-1" title="Consulter/Modifier">
                       Consulter
                     </a>
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// 1. Vérification des droits d'accès
+// Vérification des droits d'accès
 $role = $_SESSION['ut_role'] ?? '';
 if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur')) {
     $_SESSION['message'] = "Accès refusé.";
@@ -9,7 +9,7 @@ if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur'
     exit();
 }
 
-// 2. Connexion à la BDD
+// Connexion à la BDD
 require_once("param.inc.php");
 $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
@@ -19,11 +19,11 @@ if ($mysqli->connect_error) {
     exit();
 }
 
-// 3. Récupération des données POST
+// Récupération des données POST
 $action = $_POST['action'] ?? '';
 $annonce_id = $_POST['annonce_id'] ?? 0;
 
-// 4. Exécution de l'action demandée
+// Exécution de l'action demandée
 if ($action === 'delete_annonce' && $annonce_id > 0) {
     
     $stmt = $mysqli->prepare("DELETE FROM annonce WHERE an_id = ?");
@@ -44,7 +44,7 @@ if ($action === 'delete_annonce' && $annonce_id > 0) {
     $_SESSION['message'] = "Action ou annonce non valide.";
 }
 
-// 5. Redirection vers la page de gestion
+// Redirection vers la page de gestion
 $mysqli->close();
 header('Location: gestionAnnonces.php'); // Redirection vers le nouveau nom
 exit();

@@ -8,8 +8,6 @@
   <h1>Création d'un compte</h1>
   <form  method="POST" action="tt_inscription.php">
 
-    <!-- Nom et prénom sur une ou deux lignes (en fonction de la taille) -->
-    <!-- Ici on utilise le breakpoint medium -->
     <div class="row">
         <div class="col-md-6">
             <label for="nom" class="form-label">Nom</label>

@@ -5,7 +5,7 @@
   include('menu.inc.php');
   include('message.inc.php'); // Pour afficher les messages de succès/erreur
 
-  // 1. Vérification des droits d'accès
+  // Vérification des droits d'accès
   $role = $_SESSION['ut_role'] ?? '';
   if (!isset($_SESSION['ut_id']) || ($role != 'admin' && $role != 'administrateur')) {
     $_SESSION['message'] = "Accès refusé. Vous devez être connecté en tant qu'administrateur.";
@@ -13,32 +13,78 @@
     exit();
   }
 
-  // 2. Connexion à la BDD
+  // Connexion à la BDD
   require_once("param.inc.php");
   $mysqli = new mysqli($host, $login, $passwd, $dbname);
 
-  // 3. Récupération de l'ID de l'admin connecté (pour ne pas s'auto-afficher)
-  $admin_id = $_SESSION['ut_id'];
+  // Vérification de l'erreur de connexion
+  if ($mysqli->connect_error) {
+    $_SESSION['message'] = "Erreur de connexion à la base de données : " . $mysqli->connect_error;
+    header('Location: tdbAdmin.php');
+    exit();
+  }
 
-  // 4. Préparation de la requête pour lister tous les utilisateurs SAUF l'admin connecté
-  $stmt = $mysqli->prepare("SELECT ut_id, ut_nom, ut_prenom, ut_email, ut_role, ut_statut FROM utilisateur WHERE ut_id != ?");
+  // Récupération de l'ID de l'admin connecté (pour ne pas s'auto-afficher)
+  $admin_id = $_SESSION['ut_id'];
+  
+  // Gestion de la recherche
+  $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+  
+  // Construction de la requête SQL de base
+  $sql = "SELECT ut_id, ut_nom, ut_prenom, ut_email, ut_role, ut_statut FROM utilisateur WHERE ut_id != ?";
+
+  // Si une recherche est effectuée, on ajoute les conditions
+  if (!empty($search)) {
+      $sql .= " AND (ut_nom LIKE ? OR ut_prenom LIKE ? OR ut_email LIKE ?)";
+  }
+
+  // Préparation de la requête
+  $stmt = $mysqli->prepare($sql);
   
   // Vérification robuste de l'erreur de préparation
   if ($stmt === false) {
-    $_SESSION['message'] = "Erreur SQL (Prepare) : " . $mysqli->error . ". Vérifiez la structure de votre table 'utilisateur'.";
+    $_SESSION['message'] = "Erreur SQL (Prepare) : " . $mysqli->error;
     $mysqli->close();
     header('Location: tdbAdmin.php');
     exit();
   }
 
-  $stmt->bind_param("i", $admin_id);
+  // Liaison des paramètres dynamique
+  if (!empty($search)) {
+      $searchTerm = "%" . $search . "%";
+      // "isss" signifie : integer (admin_id), string (nom), string (prenom), string (email)
+      $stmt->bind_param("isss", $admin_id, $searchTerm, $searchTerm, $searchTerm);
+  } else {
+      // "i" signifie : integer (admin_id)
+      $stmt->bind_param("i", $admin_id);
+  }
+
   $stmt->execute();
   $result = $stmt->get_result();
-
 ?>
 
 <div class="container my-5">
   <h1 class="mb-4 text-center">Gestion des Utilisateurs</h1>
+
+  <!-- BARRE DE RECHERCHE -->
+  <div class="card shadow-sm mb-4">
+      <div class="card-body">
+          <form method="GET" action="gestionUtilisateurs.php" class="row g-3 align-items-center justify-content-center">
+              <div class="col-md-6">
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-search"></i>Recherche</span>
+                      <input type="text" class="form-control" name="search" placeholder="Nom, prénom ou email..." value="<?php echo htmlspecialchars($search); ?>">
+                  </div>
+              </div>
+              <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">Rechercher</button>
+                  <?php if (!empty($search)): ?>
+                      <a href="gestionUtilisateurs.php" class="btn btn-secondary">Réinitialiser</a>
+                  <?php endif; ?>
+              </div>
+          </form>
+      </div>
+  </div>
 
   <div class="card shadow-sm">
     <div class="card-body">
@@ -57,7 +103,7 @@
           </thead>
           <tbody>
             <?php
-            // 5. Boucle d'affichage des utilisateurs
+            // Boucle d'affichage des utilisateurs
             if ($result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
             ?>
@@ -112,9 +158,9 @@
             <?php
               }
             } else {
-              echo '<tr><td colspan="7" class="text-center">Aucun autre utilisateur trouvé.</td></tr>';
+              echo '<tr><td colspan="7" class="text-center">Aucun utilisateur trouvé' . (!empty($search) ? ' pour cette recherche.' : '.') . '</td></tr>';
             }
-            // 6. Fermeture des connexions
+            // Fermeture des connexions
             $stmt->close();
             $mysqli->close();
             ?>
