@@ -113,6 +113,25 @@ CREATE TABLE `utilisateur` (
   `ut_statut` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `question`
+--
+
+
+CREATE TABLE question (
+  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id_annonce INT(11) NOT NULL,
+  id_demenageur INT(11) NOT NULL,
+  question TEXT NOT NULL,
+  date_question DATETIME DEFAULT CURRENT_TIMESTAMP,
+  reponse TEXT DEFAULT NULL,
+  date_reponse DATETIME DEFAULT NULL,
+  FOREIGN KEY (id_annonce) REFERENCES annonce(an_id) ON DELETE CASCADE,
+  FOREIGN KEY (id_demenageur) REFERENCES utilisateur(ut_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Index pour les tables exportées
 --
