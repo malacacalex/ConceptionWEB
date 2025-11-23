@@ -58,7 +58,14 @@
       <strong>Vous êtes déménageur :</strong> Consultez les annonces ci-dessous et proposez vos services !
     </div>
 
-  <?php else: ?>
+  <?php elseif (isset($_SESSION['ut_id']) && $_SESSION['ut_role'] == 'admin'): ?>
+    <!-- Bloc ajouté pour l'administrateur -->
+    <div class="alert alert-dark">
+      <strong>Administration :</strong> Vous consultez la liste globale des annonces.
+    </div>
+
+  <?php elseif (!isset($_SESSION['ut_id'])): ?>
+    <!-- Ce message ne s'affiche maintenant que si personne n'est connecté -->
     <div class="alert alert-dark">
       <strong>Vous n'êtes pas connecté :</strong> <a href="connexion.php" class="alert-link">Connectez-vous</a> pour créer une demande ou proposer vos services.
     </div>
