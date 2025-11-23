@@ -29,15 +29,18 @@
   <div class="alert alert-dark">
     <strong>Vous êtes client :</strong> <a href="nvlDemande.php" class="alert-link">Creer une nouvelle demande de demenagement</a>
   </div>
-<?php elseif (isset($_SESSION['ut_id']) && $_SESSION['ut_role'] == 'demenageur'): ?>
+
+<?php elseif (isset($_SESSION['ut_id']) && ($_SESSION['ut_role'] == 'déménageur' || $_SESSION['ut_role'] == 'demenageur')): ?>
   <div class="alert alert-dark">
-    <strong>Vous êtes demenageur :</strong> Consultez les annonces ci-dessous et proposez vos services !
+    <strong>Vous êtes déménageur :</strong> Consultez les annonces ci-dessous et proposez vos services !
   </div>
+
 <?php else: ?>
   <div class="alert alert-dark">
-    <strong>Vous n'êtes pas connecte :</strong> <a href="connexion.php" class="alert-link">Connectez-vous</a> pour creer une demande ou proposer vos services.
+    <strong>Vous n'êtes pas connecté :</strong> <a href="connexion.php" class="alert-link">Connectez-vous</a> pour créer une demande ou proposer vos services.
   </div>
 <?php endif; ?>
+
 <div class="row g-4 mt-2">
   <?php
   if ($result && $result->num_rows > 0) {

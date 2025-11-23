@@ -232,7 +232,7 @@
                         </div>
                     
                     <?php elseif (isset($_SESSION['ut_id']) && $_SESSION['ut_id'] == $annonce['an_id_client']): ?>
-                        <form action="tt_repondreQuestion.php" method="POST" class="mt-2">
+                        <form action="tt_Aquestion.php" method="POST" class="mt-2">
                             <input type="hidden" name="id_question" value="<?php echo $q['id']; ?>">
                             <input type="hidden" name="id_annonce" value="<?php echo $annonce_id; ?>">
                             <div class="input-group input-group-sm">
@@ -253,7 +253,7 @@
         <?php if (isset($_SESSION['ut_id']) && ($_SESSION['ut_role'] == 'demenageur' || $_SESSION['ut_role'] == 'déménageur') && $_SESSION['ut_id'] != $annonce['an_id_client']): ?>
             <hr>
             <h6>Poser une question au client :</h6>
-            <form action="tt_poserQuestion.php" method="POST">
+            <form action="tt_Qquestion.php" method="POST">
                 <input type="hidden" name="id_annonce" value="<?php echo $annonce_id; ?>">
                 <div class="mb-3">
                     <textarea name="question" class="form-control" rows="2" placeholder="Ex: Y a-t-il un stationnement facile devant l'immeuble ?" required></textarea>

@@ -1,8 +1,8 @@
 <?php
   session_start();
  
-  // On vérifie si l'utilisateur est connecté ET s'il a le bon rôle
-  if (!isset($_SESSION['ut_id']) || $_SESSION['ut_role'] !== 'déménageur') {
+  //Vérification souple du rôle
+  if (!isset($_SESSION['ut_id']) || ($_SESSION['ut_role'] !== 'déménageur' && $_SESSION['ut_role'] !== 'demenageur')) {
     $_SESSION['erreur'] = "Vous devez être connecté en tant que déménageur pour accéder à cette page.";
     header('Location: connexion.php');
     exit();
@@ -13,7 +13,6 @@
   include('menu.inc.php');
   include('message.inc.php');
  
-  // On récupère l'ID du déménageur
   $demenageur_id = $_SESSION['ut_id'];
 
   require_once("param.inc.php");
@@ -22,6 +21,7 @@
     die("Erreur de connexion à la base de données");
   }
   $mysqli->set_charset("utf8");
+
 
   $sql_encours = "SELECT a.*, p.pr_prix_propose
                   FROM annonce a
