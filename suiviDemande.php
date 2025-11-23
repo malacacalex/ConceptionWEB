@@ -40,23 +40,55 @@
 
             if ($result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
-                // Style conditionnel selon le statut
-                $badge_color = 'bg-secondary';
-                if ($row['an_statut'] == 'ouverte') $badge_color = 'bg-success';
-                if ($row['an_statut'] == 'en cours') $badge_color = 'bg-warning text-dark';
-                if ($row['an_statut'] == 'terminée' || $row['an_statut'] == 'terminee') $badge_color = 'bg-dark';
+                
+                // --- LOGIQUE DE STATUT CALCULÉ EN PHP ---
+                $statut_bdd = $row['an_statut'];
+                $date_demenagement = new DateTime($row['an_date_demenagement']);
+                $date_aujourdhui = new DateTime(date('Y-m-d')); // Date du jour à 00:00:00
+
+                $statut_affiche = ucfirst($statut_bdd);
+                $bouton_terminer = false;
+
+                if ($statut_bdd == 'ouverte') {
+                    $badge_color = 'bg-success';
+                } elseif ($statut_bdd == 'en cours') {
+                    // CORRECTION ICI : <= au lieu de <
+                    if ($date_demenagement <= $date_aujourdhui) {
+                        // Si la date est passée OU si c'est aujourd'hui -> On peut terminer
+                        $statut_affiche = 'À finaliser';
+                        $badge_color = 'bg-warning text-dark';
+                        $bouton_terminer = true; 
+                    } else {
+                        $statut_affiche = 'En cours';
+                        $badge_color = 'bg-primary';
+                    }
+                } elseif ($statut_bdd == 'terminée' || $statut_bdd == 'terminee') {
+                    $statut_affiche = 'Terminée';
+                    $badge_color = 'bg-dark';
+                }
+                // -----------------------------------------
         ?>      
                 <div class="list-group-item list-group-item-action">
                   <div class="d-flex w-100 justify-content-between align-items-center">
                     <h5 class="mb-1"><?php echo htmlspecialchars($row['an_titre']); ?></h5>
-                    <span class="badge <?php echo $badge_color; ?> rounded-pill"><?php echo ucfirst($row['an_statut']); ?></span>
+                    <span class="badge <?php echo $badge_color; ?> rounded-pill"><?php echo $statut_affiche; ?></span>
                   </div>
                   <p class="mb-1">Prévu le : <strong><?php echo date('d/m/Y', strtotime($row['an_date_demenagement'])); ?></strong></p>
                   
-                  <div class="mt-2">
+                  <div class="mt-2 d-flex gap-2">
                     <a href="detailAnnonce.php?id=<?php echo $row['an_id']; ?>" class="btn btn-outline-dark btn-sm">
                       Voir les détails et propositions
                     </a>
+
+                    <?php if ($bouton_terminer): ?>
+                        <form action="tt_terminer_demenagement.php" method="POST" onsubmit="return confirm('Confirmez-vous que le déménagement est terminé ? Cela permettra de laisser une évaluation.');">
+                            <input type="hidden" name="id_annonce" value="<?php echo $row['an_id']; ?>">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Marquer comme Terminé
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
                   </div>
                 </div>
         <?php

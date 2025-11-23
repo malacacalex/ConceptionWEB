@@ -32,7 +32,10 @@
           <li class="nav-item">
             <a class="nav-link" href="creationDemande.php" style="color:white">Créer une annonce</a>
           </li>
-
+          <li class="nav-item">
+            <a class="nav-link" href="suiviDemande.php" style="color:white">Suivre mes annonces</a>
+          </li>
+          
         <?php elseif ($role === 'déménageur' || $role === 'demenageur'): ?>
           <li class="nav-item">
             <a class="nav-link" href="tdbDemenageur.php" style="color:white">Tableau de bord déménageur</a>

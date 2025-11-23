@@ -22,7 +22,7 @@
   }
   $mysqli->set_charset("utf8");
 
-  // 1. Missions en cours (Acceptées et statut annonce 'en cours')
+  // 1. Missions en cours
   $sql_encours = "SELECT a.*, p.pr_prix_propose
                   FROM annonce a
                   JOIN proposition p ON a.an_id = p.pr_id_annonce
@@ -37,7 +37,7 @@
   $jobs_encours = $result_encours->fetch_all(MYSQLI_ASSOC);
   $stmt_encours->close();
 
-  // 2. Propositions en attente (Statut proposition 'en attente', annonce 'ouverte')
+  // 2. Propositions en attente
   $sql_attente = "SELECT a.*, p.pr_prix_propose
                   FROM annonce a
                   JOIN proposition p ON a.an_id = p.pr_id_annonce
@@ -52,14 +52,18 @@
   $prop_attente = $result_attente->fetch_all(MYSQLI_ASSOC);
   $stmt_attente->close();
 
-  // 3. Historique (Missions terminées)
-  $sql_termines = "SELECT a.*, p.pr_prix_propose
+  // 3. Historique + ÉVALUATIONS (MODIFIÉ)
+  // On fait une jointure GAUCHE (LEFT JOIN) avec la table evaluation
+  // car une mission terminée n'a pas forcément encore été notée.
+  $sql_termines = "SELECT a.*, p.pr_prix_propose, e.ev_note, e.ev_commentaire
                    FROM annonce a
                    JOIN proposition p ON a.an_id = p.pr_id_annonce
+                   LEFT JOIN evaluation e ON a.an_id = e.ev_id_annonce AND e.ev_id_demenageur = p.pr_id_demenageur
                    WHERE p.pr_id_demenageur = ?
                    AND p.pr_statut = 'acceptée'
                    AND (a.an_statut = 'terminée' OR a.an_statut = 'terminee')
                    ORDER BY a.an_date_demenagement DESC";
+                   
   $stmt_termines = $mysqli->prepare($sql_termines);
   $stmt_termines->bind_param("i", $demenageur_id);
   $stmt_termines->execute();
@@ -114,7 +118,7 @@
                       </p>
                       <p class="card-text">
                         <strong><i class="far fa-calendar-alt"></i> Date :</strong> <?php echo date('d/m/Y', strtotime($job['an_date_demenagement'])); ?><br>
-                        <strong><i class="far fa-clock"></i> Heure :</strong> <?php echo date('H:i', strtotime($job['an_heure_debut'])); ?>
+                        <strong><i class="far fa-clock"></i> Heure :</strong> <?php echo ($job['an_heure_debut']) ? date('H:i', strtotime($job['an_heure_debut'])) : 'Non précisée'; ?>
                       </p>
                       <div class="alert alert-success py-2">
                         <strong>Prix validé : <?php echo $job['pr_prix_propose']; ?> €</strong>
@@ -159,24 +163,58 @@
           <?php endif; ?>
         </div>
       
-        <!-- ONGLET HISTORIQUE -->
+        <!-- ONGLET HISTORIQUE (MODIFIÉ POUR AFFICHER LA NOTE) -->
         <div class="tab-pane fade" id="historique-tab-pane" role="tabpanel">
           <?php if (count($jobs_termines) > 0): ?>
             <div class="list-group">
               <?php foreach ($jobs_termines as $job): ?>
-                <a href="detailAnnonce.php?id=<?php echo $job['an_id']; ?>" class="list-group-item list-group-item-action list-group-item-secondary">
+                <div class="list-group-item list-group-item-action list-group-item-light">
                   <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1 text-decoration-line-through"><?php echo htmlspecialchars($job['an_titre']); ?></h5>
-                    <small><span class="badge bg-success">Terminé</span></small>
+                    <h5 class="mb-1 text-decoration-line-through text-muted"><?php echo htmlspecialchars($job['an_titre']); ?></h5>
+                    
+                    <!-- Affichage de la note -->
+                    <?php if (!empty($job['ev_note'])): ?>
+                        <div class="text-warning fs-5">
+                            <?php 
+                            for($i=0; $i<5; $i++) {
+                                echo ($i < $job['ev_note']) ? '★' : '☆';
+                            }
+                            ?>
+                        </div>
+                    <?php else: ?>
+                        <small class="text-muted fst-italic">Pas encore noté</small>
+                    <?php endif; ?>
                   </div>
-                  <p class="mb-1 text-muted"><?php echo htmlspecialchars($job['an_ville_depart']); ?> &rarr; <?php echo htmlspecialchars($job['an_ville_arrivee']); ?></p>
-                  <small>Effectué le <?php echo date('d/m/Y', strtotime($job['an_date_demenagement'])); ?> - Prix : <?php echo $job['pr_prix_propose']; ?> €</small>
-                </a>
+                  
+                  <div class="row mt-2">
+                      <div class="col-md-8">
+                          <p class="mb-1">
+                              <i class="fas fa-route text-secondary"></i> <?php echo htmlspecialchars($job['an_ville_depart']); ?> &rarr; <?php echo htmlspecialchars($job['an_ville_arrivee']); ?>
+                          </p>
+                          <small class="text-muted">
+                              Effectué le <?php echo date('d/m/Y', strtotime($job['an_date_demenagement'])); ?> 
+                              - Prix : <strong><?php echo $job['pr_prix_propose']; ?> €</strong>
+                          </small>
+                      </div>
+                      <div class="col-md-4 text-end">
+                          <a href="detailAnnonce.php?id=<?php echo $job['an_id']; ?>" class="btn btn-outline-dark btn-sm">Revoir la mission</a>
+                      </div>
+                  </div>
+
+                  <!-- Affichage du commentaire client s'il existe -->
+                  <?php if (!empty($job['ev_commentaire'])): ?>
+                      <div class="mt-3 p-2 bg-white border rounded text-secondary">
+                          <strong><i class="fas fa-quote-left"></i> Avis du client :</strong><br>
+                          <em>"<?php echo nl2br(htmlspecialchars($job['ev_commentaire'])); ?>"</em>
+                      </div>
+                  <?php endif; ?>
+
+                </div>
               <?php endforeach; ?>
             </div>
           <?php else: ?>
             <div class="alert alert-light border text-center">
-              Votre historique est vide.
+              Vous n'avez encore terminé aucune mission.
             </div>
           <?php endif; ?>
         </div>
