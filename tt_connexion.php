@@ -51,18 +51,9 @@
         
         $_SESSION['message'] = "Connexion réussie !";
 
-        // Redirection
+        
         $redirection_page = 'index.php'; 
         
-        $role_clean = str_replace(['é', 'è', 'ê'], 'e', $user['ut_role']); 
-
-        if ($role_clean == 'admin' || $role_clean == 'administrateur') {
-             $redirection_page = 'tdbAdmin.php';
-        } elseif ($role_clean == 'client') {
-             $redirection_page = 'tdbClient.php';
-        } elseif ($role_clean == 'demenageur') {
-             $redirection_page = 'tdbDemenageur.php';
-        }
         
         $mysqli->close();
         header("Location: $redirection_page");

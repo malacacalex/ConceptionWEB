@@ -18,7 +18,7 @@
           <a class="nav-link" aria-current="page" href="index.php" style="color:white">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="annonces.php" style="color:white">Les Annonces</a>
+          <a class="nav-link" href="annonces.php" style="color:white">Toutes les annonces</a>
         </li>
         
         <?php 
@@ -27,23 +27,23 @@
         if ($role === 'client'): 
         ?>
           <li class="nav-item">
-            <a class="nav-link" href="tdbClient.php" style="color:white">Tableau de bord Client</a>
+            <a class="nav-link" href="tdbClient.php" style="color:white">Tableau de bord client</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="nvlDemande.php" style="color:white">Création demande</a>
+            <a class="nav-link" href="creationDemande.php" style="color:white">Créer une annonce</a>
           </li>
 
         <?php elseif ($role === 'déménageur' || $role === 'demenageur'): ?>
           <li class="nav-item">
-            <a class="nav-link" href="tdbDemenageur.php" style="color:white">Tableau de bord Déménageur</a>
+            <a class="nav-link" href="tdbDemenageur.php" style="color:white">Tableau de bord déménageur</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="tdbDemenageur.php" style="color:white">Mes Missions</a>
+            <a class="nav-link" href="missionDemenageur.php" style="color:white">Mes missions</a>
           </li>
 
         <?php elseif ($role === 'admin' || $role === 'administrateur'): ?>
           <li class="nav-item">
-            <a class="nav-link fw-bold text-info" href="tdbAdmin.php" style="color:white">Tableau de bord Admin</a>
+            <a class="nav-link fw-bold text-info" href="tdbAdmin.php" style="color:white">Tableau de bord admin</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="gestionUtilisateurs.php" style="color:white">Gestion utilisateurs</a>
